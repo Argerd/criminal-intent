@@ -1,2 +1,2 @@
-# criminal-intent-from
+# criminal-intent
 Приложение, сделанное по книге
