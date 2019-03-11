@@ -1,9 +1,8 @@
 package argerd.ru;
 
-import android.app.Activity;
-import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.support.v4.view.ViewPager;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.view.LayoutInflater;
@@ -18,12 +17,13 @@ import java.util.UUID;
 
 public class CrimeFragment extends Fragment {
     private static final String ARG_CRIME_ID = "crime_id";
-    private static final String EXTRA_UUID = "UUID_to_crime_list_fragment";
+    //private static final String EXTRA_UUID = "UUID_to_crime_list_fragment";
 
     private Crime crime;
     private EditText titleField;
     private Button dateButton;
     private CheckBox solvedCheckBox;
+    private Button toTheFirstButton;
 
     public static CrimeFragment newInstance(UUID crimeId) {
         Bundle args = new Bundle();
@@ -33,16 +33,6 @@ public class CrimeFragment extends Fragment {
         crimeFragment.setArguments(args);
         return crimeFragment;
     }
-
-    /*private void setIdCrimeResult(UUID crimeId) {
-        Intent data = new Intent();
-        data.putExtra(EXTRA_UUID, crimeId);
-        getActivity().setResult(Activity.RESULT_OK, data);
-    }*/
-
-    /*public static UUID wasCrimeChangedById(Intent data) {
-        return (UUID) data.getSerializableExtra(EXTRA_UUID);
-    }*/
 
     /**
      * Тут настраивается фрагмент
@@ -55,6 +45,7 @@ public class CrimeFragment extends Fragment {
         UUID crimeId = (UUID) getArguments().getSerializable(ARG_CRIME_ID);
         crime = CrimeLab.get(getActivity()).getCrime(crimeId);
     }
+
 
     /**
      * в этом методе заполняется макет представления фрагмента
@@ -81,7 +72,6 @@ public class CrimeFragment extends Fragment {
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
                 crime.setTitle(s.toString());
-                //setIdCrimeResult(crime.getId());
             }
 
             @Override
@@ -94,13 +84,14 @@ public class CrimeFragment extends Fragment {
         dateButton.setText(crime.getDate().toString());
         dateButton.setEnabled(false);
 
+        toTheFirstButton = view.findViewById(R.id.button_to_first);
+
         solvedCheckBox = view.findViewById(R.id.crime_solved);
         solvedCheckBox.setChecked(crime.isSolved());
         solvedCheckBox.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
                 crime.setSolved(isChecked);
-                //setIdCrimeResult(crime.getId());
             }
         });
 

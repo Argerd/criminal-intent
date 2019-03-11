@@ -57,7 +57,8 @@ public class CrimeListFragment extends Fragment {
             adapter = new CrimeAdapter(crimeLab.getCrimes());
             recyclerView.setAdapter(adapter);
         } else {
-            adapter.notifyItemChanged(position);
+            //adapter.notifyItemChanged(position);
+            adapter.notifyDataSetChanged();
         }
     }
 
@@ -74,6 +75,7 @@ public class CrimeListFragment extends Fragment {
 
         /**
          * связь итема с моделью
+         *
          * @param crime
          */
         public void bind(Crime crime) {
@@ -102,6 +104,7 @@ public class CrimeListFragment extends Fragment {
 
         /**
          * Конструктор для итема с полицией
+         *
          * @param view
          */
         public CrimeHolder(View view) {
@@ -123,11 +126,10 @@ public class CrimeListFragment extends Fragment {
 
         @Override
         public void onClick(View v) {
-            //Intent intent = CrimeActivity.newIntent(getActivity(), crime.getId());
             /*startActivityForResult(CrimeActivity.newIntent(getActivity(), crime.getId()),
                     REQUEST_CRIME);*/
             position = getAdapterPosition();
-            startActivity(CrimeActivity.newIntent(getActivity(), crime.getId()));
+            startActivity(CrimePagerActivity.newIntent(getActivity(), crime.getId()));
         }
     }
 
