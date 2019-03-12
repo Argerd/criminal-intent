@@ -12,6 +12,7 @@ import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
 import android.widget.EditText;
+import android.widget.Toast;
 
 import java.util.UUID;
 
@@ -97,7 +98,14 @@ public class CrimeFragment extends Fragment {
         policeCheckBox.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                crime.setRequiresPolice(isChecked);
+                if (!crime.isSolved()) {
+                    crime.setRequiresPolice(isChecked);
+                } else {
+                    policeCheckBox.setChecked(false);
+                    Toast.makeText(getActivity(),
+                            "Вызов полиции не требуется, так как преступление уже решено.",
+                            Toast.LENGTH_SHORT).show();
+                }
             }
         });
 
