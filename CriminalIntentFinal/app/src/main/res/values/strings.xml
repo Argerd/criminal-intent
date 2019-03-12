@@ -7,7 +7,8 @@
     <string name="crime_solved_label">Solved</string>
 
     <string name="call_to_police">Call to police!</string>
+    <string name="for_police">For police</string>
 
-    <string name="to_the_first_crime">To the first crime</string>
-    <string name="to_the_last_crime">To the last crime</string>
+    <string name="to_the_first_crime">To the first</string>
+    <string name="to_the_last_crime">To the last</string>
 </resources>

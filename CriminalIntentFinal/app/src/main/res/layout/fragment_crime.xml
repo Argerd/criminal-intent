@@ -47,34 +47,20 @@
 
     <CheckBox
         android:id="@+id/crime_solved"
-        android:layout_width="0dp"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginStart="5dp"
         android:text="@string/crime_solved_label"
-        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/crime_date" />
 
-    <Button
-        android:id="@+id/button_to_first"
+    <CheckBox
+        android:id="@+id/for_police"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="15dp"
-        android:layout_marginTop="10dp"
-        android:layout_marginEnd="15dp"
-        android:text="@string/to_the_first_crime"
+        android:layout_marginEnd="5dp"
+        android:text="@string/for_police"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/crime_solved" />
+        app:layout_constraintTop_toBottomOf="@+id/crime_date" />
 
-    <Button
-        android:id="@+id/button_to_last"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="15dp"
-        android:layout_marginTop="10dp"
-        android:layout_marginEnd="15dp"
-        android:text="@string/to_the_last_crime"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/button_to_first" />
 </android.support.constraint.ConstraintLayout>

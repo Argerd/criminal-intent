@@ -17,13 +17,12 @@ import java.util.UUID;
 
 public class CrimeFragment extends Fragment {
     private static final String ARG_CRIME_ID = "crime_id";
-    //private static final String EXTRA_UUID = "UUID_to_crime_list_fragment";
 
     private Crime crime;
     private EditText titleField;
     private Button dateButton;
     private CheckBox solvedCheckBox;
-    private Button toTheFirstButton;
+    private CheckBox policeCheckBox;
 
     public static CrimeFragment newInstance(UUID crimeId) {
         Bundle args = new Bundle();
@@ -84,14 +83,21 @@ public class CrimeFragment extends Fragment {
         dateButton.setText(crime.getDate().toString());
         dateButton.setEnabled(false);
 
-        toTheFirstButton = view.findViewById(R.id.button_to_first);
-
         solvedCheckBox = view.findViewById(R.id.crime_solved);
         solvedCheckBox.setChecked(crime.isSolved());
         solvedCheckBox.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
                 crime.setSolved(isChecked);
+            }
+        });
+
+        policeCheckBox = view.findViewById(R.id.for_police);
+        policeCheckBox.setChecked(crime.isRequiresPolice());
+        policeCheckBox.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                crime.setRequiresPolice(isChecked);
             }
         });
 
