@@ -89,7 +89,16 @@ public class CrimeFragment extends Fragment {
         solvedCheckBox.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                crime.setSolved(isChecked);
+                if (!crime.isRequiresPolice()) {
+                    crime.setSolved(isChecked);
+                } else {
+                    solvedCheckBox.setChecked(false);
+                    Toast.makeText(getActivity(), "У вас есть возможность вызвать полицию. " +
+                            "Если полиция приехала и решила проблему, то снимите опцию, обозначающую " +
+                            "это дело для полиции, и попробуйте отметить это дело решенным еще раз. " +
+                            "Если полиция не была вызвана, то вернитесь на предыдущий экран и нажмите " +
+                            "кнопку вызова.", Toast.LENGTH_LONG).show();
+                }
             }
         });
 
