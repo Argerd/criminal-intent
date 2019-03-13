@@ -6,9 +6,11 @@
     <string name="crime_details_label">Details</string>
     <string name="crime_solved_label">Solved</string>
 
-    <string name="call_to_police">Call to police!</string>
-    <string name="for_police">For police</string>
+    <string name="call_to_police_label">Call to police!</string>
+    <string name="for_police_label">For police</string>
 
-    <string name="to_the_first_crime">To the first</string>
-    <string name="to_the_last_crime">To the last</string>
+    <string name="to_the_first_crime_button_label">To the first</string>
+    <string name="to_the_last_crime_button_label">To the last</string>
+
+    <string name="date_picker_title">Date of crime</string>
 </resources>

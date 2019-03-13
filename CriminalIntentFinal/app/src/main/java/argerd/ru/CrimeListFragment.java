@@ -1,12 +1,9 @@
 package argerd.ru;
 
-import android.app.Activity;
-import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -18,18 +15,10 @@ import android.widget.Toast;
 import java.text.DateFormat;
 import java.util.List;
 import java.util.Locale;
-import java.util.UUID;
-
 
 public class CrimeListFragment extends Fragment {
-    private static final int REQUEST_CRIME = 1;
-    private static final String TAG = "myLogs";
-
-    //private UUID uuidChanged;
-
     private RecyclerView recyclerView;
     private CrimeAdapter adapter;
-    private int position;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -52,12 +41,10 @@ public class CrimeListFragment extends Fragment {
 
     private void updateUI() {
         CrimeLab crimeLab = CrimeLab.get(getActivity());
-        //List<Crime> crimes = crimeLab.getCrimes();
         if (adapter == null) {
             adapter = new CrimeAdapter(crimeLab.getCrimes());
             recyclerView.setAdapter(adapter);
         } else {
-            //adapter.notifyItemChanged(position);
             adapter.notifyDataSetChanged();
         }
     }
@@ -126,25 +113,9 @@ public class CrimeListFragment extends Fragment {
 
         @Override
         public void onClick(View v) {
-            /*startActivityForResult(CrimeActivity.newIntent(getActivity(), crime.getId()),
-                    REQUEST_CRIME);*/
-            position = getAdapterPosition();
             startActivity(CrimePagerActivity.newIntent(getActivity(), crime.getId()));
         }
     }
-
-    /*@Override
-    public void onActivityResult(int requestCode, int resultCode, Intent data) {
-        if (resultCode != Activity.RESULT_OK) {
-            return;
-        }
-        if (requestCode == REQUEST_CRIME) {
-            if (data == null) {
-                return;
-            }
-            uuidChanged = CrimeFragment.wasCrimeChangedById(data);
-        }
-    }*/
 
     private class CrimeAdapter extends RecyclerView.Adapter<CrimeHolder> {
         public static final int POLICE_FREE = 0;
@@ -168,7 +139,6 @@ public class CrimeListFragment extends Fragment {
         @Override
         public CrimeHolder onCreateViewHolder(ViewGroup parent, int viewType) {
             LayoutInflater layoutInflater = LayoutInflater.from(getActivity());
-            //return new CrimeHolder(layoutInflater, parent);
 
             if (viewType == POLICE_FREE) {
                 return new CrimeHolder(layoutInflater, parent);

@@ -1,8 +1,10 @@
 package argerd.ru;
 
+import android.app.Activity;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
-import android.support.v4.view.ViewPager;
+import android.support.v4.app.FragmentManager;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.view.LayoutInflater;
@@ -11,15 +13,25 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
+import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.Toast;
 
+import java.util.Date;
 import java.util.UUID;
 
 public class CrimeFragment extends Fragment {
+    // константа для получения из аргумента фрагмента crimeId
     private static final String ARG_CRIME_ID = "crime_id";
 
+    // константа для вызова диалогового окна
+    private static final String DIALOG_DATE = "DialogDate";
+
+    // константа для указания CrimeFragment целевым фрагментом для DatePickerFragment
+    private static final int REQUEST_DATE = 0;
+
     private Crime crime;
+
     private EditText titleField;
     private Button dateButton;
     private CheckBox solvedCheckBox;
@@ -46,10 +58,24 @@ public class CrimeFragment extends Fragment {
         crime = CrimeLab.get(getActivity()).getCrime(crimeId);
     }
 
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if (requestCode != Activity.RESULT_OK) {
+            return;
+        }
+        if (requestCode == REQUEST_DATE) {
+            crime.setDate((Date) data.getSerializableExtra(DatePickerFragment.EXTRA_DATE));
+            updateDate();
+        }
+    }
+
+    private void updateDate() {
+        dateButton.setText(crime.getDate().toString());
+    }
 
     /**
      * в этом методе заполняется макет представления фрагмента
-     * все view тут, короче
+     * все views тут, короче
      *
      * @param inflater
      * @param container
@@ -81,8 +107,16 @@ public class CrimeFragment extends Fragment {
         });
 
         dateButton = view.findViewById(R.id.crime_date);
-        dateButton.setText(crime.getDate().toString());
-        dateButton.setEnabled(false);
+        updateDate();
+        dateButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                FragmentManager fragmentManager = getFragmentManager();
+                DatePickerFragment dialog = DatePickerFragment.newInstance(crime.getDate());
+                dialog.setTargetFragment(CrimeFragment.this, REQUEST_DATE);
+                dialog.show(fragmentManager, DIALOG_DATE);
+            }
+        });
 
         solvedCheckBox = view.findViewById(R.id.crime_solved);
         solvedCheckBox.setChecked(crime.isSolved());
