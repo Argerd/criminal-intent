@@ -72,9 +72,7 @@ public class CrimeFragment extends Fragment {
             updateDate();
         }
         if (requestCode == REQUEST_TIME) {
-            Date time = (Date) data.getSerializableExtra(TimePickerFragment.EXTRA_TIME);
-            crime.getDate().setHours(time.getHours());
-            crime.getDate().setMinutes(time.getMinutes());
+            crime.setDate((Date) data.getSerializableExtra(TimePickerFragment.EXTRA_TIME));
             updateDate();
         }
     }

@@ -5,12 +5,15 @@ import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.v4.app.DialogFragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.TimePicker;
 
+import java.sql.Time;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
 
@@ -46,6 +49,10 @@ public class TimePickerFragment extends DialogFragment {
     public Dialog onCreateDialog(Bundle saveInstanceState) {
         View view = LayoutInflater.from(getActivity()).inflate(R.layout.dialog_time, null);
 
+        //Date date = (Date) getArguments().getSerializable(ARG_TIME);
+        timePicker = view.findViewById(R.id.dialog_time_picker);
+        timePicker.setIs24HourView(true);
+
         return new AlertDialog.Builder(getActivity())
                 .setView(view)
                 .setTitle(R.string.time_picker_title)
@@ -53,8 +60,17 @@ public class TimePickerFragment extends DialogFragment {
                         new DialogInterface.OnClickListener() {
                             @Override
                             public void onClick(DialogInterface dialog, int which) {
-                                Date time = GregorianCalendar.getInstance().getTime();
-                                sendResult(Activity.RESULT_OK, time);
+                                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                                    Date date = (Date) getArguments().getSerializable(ARG_TIME);
+                                    Calendar time = Calendar.getInstance();
+                                    time.setTime(date);
+                                    time.add(Calendar.HOUR, timePicker.getHour());
+                                    time.add(Calendar.MINUTE, timePicker.getMinute());
+                                    date = time.getTime();
+                                    System.out.println("DATE " + date.toString());
+                                    sendResult(Activity.RESULT_OK, date);
+                                }
+                                return;
                             }
                         })
                 .create();
