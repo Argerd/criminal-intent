@@ -5,17 +5,14 @@
     <string name="crime_title_label">Title</string>
     <string name="crime_details_label">Details</string>
     <string name="crime_solved_label">Solved</string>
-
     <string name="call_to_police_label">Call to police!</string>
     <string name="for_police_label">For police</string>
-
     <string name="to_the_first_crime_button_label">To the first</string>
     <string name="to_the_last_crime_button_label">To the last</string>
-
     <string name="date_picker_title">Date of crime</string>
-
     <string name="time_picker_title">Time of crime</string>
     <string name="time_button_label">Time button</string>
+    <string name="delete_button">Delete this crime</string>
 
     <string name="new_crime">New crime</string>
     <string name="show_subtittle">Show Subtitle</string>

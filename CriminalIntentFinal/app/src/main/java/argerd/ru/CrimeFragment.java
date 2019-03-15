@@ -40,6 +40,7 @@ public class CrimeFragment extends Fragment {
     private Button timeButton;
     private CheckBox solvedCheckBox;
     private CheckBox policeCheckBox;
+    private Button deleteButton;
 
     public static CrimeFragment newInstance(UUID crimeId) {
         Bundle args = new Bundle();
@@ -168,6 +169,21 @@ public class CrimeFragment extends Fragment {
                             "Вызов полиции не требуется, так как преступление уже решено.",
                             Toast.LENGTH_SHORT).show();
                 }
+            }
+        });
+
+        deleteButton = view.findViewById(R.id.delete_button);
+        deleteButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                int position;
+                for (int i = 0; i < CrimeLab.get(getActivity()).getCrimes().size(); i++) {
+                    if (CrimeLab.get(getActivity()).getCrimes().get(i).getId() == crime.getId()) {
+                        CrimeLab.get(getActivity()).getCrimes().remove(i);
+                        break;
+                    }
+                }
+                getActivity().finish();
             }
         });
 
