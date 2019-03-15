@@ -16,4 +16,9 @@
 
     <string name="time_picker_title">Time of crime</string>
     <string name="time_button_label">Time button</string>
+
+    <string name="new_crime">New crime</string>
+    <string name="show_subtittle">Show Subbtitle</string>
+    <string name="hide_subtittle">Hide Subbtitle</string>
+    <string name="subtitle_format">%1$d crimes</string>
 </resources>
