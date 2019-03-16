@@ -9,6 +9,7 @@ public class Crime {
     private Date date;
     private boolean solved;
     private boolean requiresPolice;
+    private String suspect;
 
     public Crime(UUID id) {
         this.id = id;
@@ -53,5 +54,13 @@ public class Crime {
 
     public void setSolved(boolean solved) {
         this.solved = solved;
+    }
+
+    public String getSuspect() {
+        return suspect;
+    }
+
+    public void setSuspect(String suspect) {
+        this.suspect = suspect;
     }
 }

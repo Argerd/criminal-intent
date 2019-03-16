@@ -70,6 +70,7 @@ public class CrimeLab {
         contentValues.put(CrimeTable.Columns.DATE, crime.getDate().getTime());
         contentValues.put(CrimeTable.Columns.SOLVED, crime.isSolved() ? 1 : 0);
         contentValues.put(CrimeTable.Columns.POLICE, crime.isRequiresPolice() ? 1 : 0);
+        contentValues.put(CrimeTable.Columns.SUSPECT, crime.getSuspect());
         return contentValues;
     }
 
