@@ -16,7 +16,6 @@ import android.widget.CompoundButton;
 import android.widget.EditText;
 import android.widget.Toast;
 
-import java.util.Calendar;
 import java.util.Date;
 import java.util.UUID;
 
@@ -176,17 +175,23 @@ public class CrimeFragment extends Fragment {
         deleteButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                int position;
                 for (int i = 0; i < CrimeLab.get(getActivity()).getCrimes().size(); i++) {
                     if (CrimeLab.get(getActivity()).getCrimes().get(i).getId() == crime.getId()) {
                         CrimeLab.get(getActivity()).getCrimes().remove(i);
                         break;
                     }
                 }
+                CrimeLab.get(getActivity()).deleteCrime(crime);
                 getActivity().finish();
             }
         });
 
         return view;
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        CrimeLab.get(getActivity()).updateCrime(crime);
     }
 }
