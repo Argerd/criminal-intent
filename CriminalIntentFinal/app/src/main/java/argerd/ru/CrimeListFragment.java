@@ -28,6 +28,7 @@ public class CrimeListFragment extends Fragment {
     private RecyclerView recyclerView;
     private CrimeAdapter adapter;
 
+    private Button createFirstCrimeButton;
     private boolean isSubtittleVisible;
 
     @Override
@@ -36,14 +37,31 @@ public class CrimeListFragment extends Fragment {
         outState.putBoolean(SAVED_SUBTITLE_VISIBLE, isSubtittleVisible);
     }
 
+    private void createNewCrime() {
+        Crime crime = new Crime();
+        CrimeLab.get(getActivity()).addCrime(crime);
+        Intent intent = CrimePagerActivity.newIntent(getActivity(), crime.getId());
+        startActivity(intent);
+    }
+
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         setHasOptionsMenu(true);
+
         if (savedInstanceState != null) {
             isSubtittleVisible = savedInstanceState.getBoolean(SAVED_SUBTITLE_VISIBLE);
         }
+
         View view = inflater.inflate(R.layout.fragment_crime_list, container, false);
+
+        createFirstCrimeButton = view.findViewById(R.id.create_first_crime_button);
+        createFirstCrimeButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                createNewCrime();
+            }
+        });
 
         recyclerView = view.findViewById(R.id.crime_recycler_view);
         recyclerView.setLayoutManager((new LinearLayoutManager(getActivity())));
@@ -76,15 +94,12 @@ public class CrimeListFragment extends Fragment {
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.new_crime:
-                Crime crime = new Crime();
-                CrimeLab.get(getActivity()).addCrime(crime);
-                Intent intent = CrimePagerActivity.newIntent(getActivity(), crime.getId());
-                startActivity(intent);
+                createNewCrime();
                 return true;
             case R.id.show_subtittle:
                 isSubtittleVisible = !isSubtittleVisible;
                 getActivity().invalidateOptionsMenu();
-                updateSubtittle();;
+                updateSubtittle();
                 return true;
             default:
                 return super.onOptionsItemSelected(item);
@@ -94,7 +109,8 @@ public class CrimeListFragment extends Fragment {
     private void updateSubtittle() {
         CrimeLab crimeLab = CrimeLab.get(getActivity());
         int countOfCrimes = crimeLab.getCrimes().size();
-        String subtittle = getString(R.string.subtitle_format, countOfCrimes);
+        String subtittle = getResources().getQuantityString(R.plurals.subtitle_plural,
+                countOfCrimes, countOfCrimes);
 
         if (!isSubtittleVisible) {
             subtittle = null;
@@ -113,6 +129,9 @@ public class CrimeListFragment extends Fragment {
             adapter.notifyDataSetChanged();
         }
         updateSubtittle();
+        if (crimeLab.getCrimes().size() > 0) {
+            createFirstCrimeButton.setVisibility(View.GONE);
+        }
     }
 
     /**

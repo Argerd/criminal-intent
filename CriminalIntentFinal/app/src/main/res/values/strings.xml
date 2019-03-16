@@ -14,8 +14,13 @@
     <string name="time_button_label">Time button</string>
     <string name="delete_button">Delete this crime</string>
 
+    <string name="create_button">Create frist crime!</string>
+
     <string name="new_crime">New crime</string>
     <string name="show_subtittle">Show Subtitle</string>
     <string name="hide_subtittle">Hide Subtitle</string>
-    <string name="subtitle_format">%1$d crimes</string>
+    <plurals name="subtitle_plural">
+        <item quantity="one">%1$d crime</item>
+        <item quantity="other">%1$d crimes</item>
+    </plurals>
 </resources>
