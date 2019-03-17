@@ -2,7 +2,10 @@ package argerd.ru;
 
 import android.app.Activity;
 import android.content.Intent;
+import android.database.Cursor;
+import android.net.Uri;
 import android.os.Bundle;
+import android.provider.ContactsContract;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.text.Editable;
@@ -33,6 +36,9 @@ public class CrimeFragment extends Fragment {
     // константа для указания CrimeFragment целевым фрагментом для TimePickerFragment
     private static final int REQUEST_TIME = 1488;
 
+    // константа для запроса к Андроид для контакта
+    private static final int REQUEST_CONTACT = 18;
+
     private Crime crime;
 
     private EditText titleField;
@@ -41,6 +47,8 @@ public class CrimeFragment extends Fragment {
     private CheckBox solvedCheckBox;
     private CheckBox policeCheckBox;
     private Button deleteButton;
+    private Button reportButton;
+    private Button suspectButton;
 
     public static CrimeFragment newInstance(UUID crimeId) {
         Bundle args = new Bundle();
@@ -64,17 +72,38 @@ public class CrimeFragment extends Fragment {
     }
 
     @Override
-    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+    public void onActivityResult(int requestCode, int resultCode, Intent intent) {
         if (resultCode != Activity.RESULT_OK) {
             return;
         }
         if (requestCode == REQUEST_DATE) {
-            crime.setDate((Date) data.getSerializableExtra(DatePickerFragment.EXTRA_DATE));
+            crime.setDate((Date) intent.getSerializableExtra(DatePickerFragment.EXTRA_DATE));
             updateDate();
         }
         if (requestCode == REQUEST_TIME) {
-            crime.setDate((Date) data.getSerializableExtra(TimePickerFragment.EXTRA_TIME));
+            crime.setDate((Date) intent.getSerializableExtra(TimePickerFragment.EXTRA_TIME));
             updateDate();
+        }
+        if (requestCode == REQUEST_CONTACT && intent != null) {
+            Uri contectUri = intent.getData();
+            // определения полей, значения которых должны быть возвращены запросом
+            String[] queryFields = new String[]{ContactsContract.Contacts.DISPLAY_NAME};
+            // выполнение запроса - contactUri здесь выполняет функции условия where
+            Cursor cursor = getActivity().getContentResolver().query(contectUri, queryFields,
+                    null, null, null);
+            try {
+                //проверка получения результатов
+                if (cursor.getCount() == 0) {
+                    return;
+                }
+                // извлечение первого столбца данных - имени подозреваемого.
+                cursor.moveToFirst();
+                String suspect = cursor.getString(0);
+                crime.setSuspect(suspect);
+                suspectButton.setText(suspect);
+            } finally {
+                cursor.close();
+            }
         }
     }
 
@@ -186,6 +215,32 @@ public class CrimeFragment extends Fragment {
                 getActivity().finish();
             }
         });
+
+        reportButton = view.findViewById(R.id.crime_report);
+        reportButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(Intent.ACTION_SEND);
+                intent.setType("text/plain");
+                intent.putExtra(Intent.EXTRA_TEXT, getCrimeReport());
+                intent.putExtra(Intent.EXTRA_SUBJECT, getString(R.string.crime_report_subject));
+                intent = Intent.createChooser(intent, getString(R.string.send_report));
+                startActivity(intent);
+            }
+        });
+        suspectButton = view.findViewById(R.id.crime_suspect);
+        suspectButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent pickContactIntent = new Intent(Intent.ACTION_PICK,
+                        ContactsContract.Contacts.CONTENT_URI);
+                pickContactIntent = Intent.createChooser(pickContactIntent, "Выберете приложение:");
+                startActivityForResult(pickContactIntent, REQUEST_CONTACT);
+            }
+        });
+        if (crime.getSuspect() != null) {
+            suspectButton.setText(crime.getSuspect());
+        }
 
         return view;
     }
