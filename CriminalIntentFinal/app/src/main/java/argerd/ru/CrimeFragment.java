@@ -2,12 +2,14 @@ package argerd.ru;
 
 import android.app.Activity;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.ContactsContract;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
+import android.support.v4.app.ShareCompat;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.text.format.DateFormat;
@@ -39,6 +41,12 @@ public class CrimeFragment extends Fragment {
     // константа для запроса к Андроид для контакта
     private static final int REQUEST_CONTACT = 18;
 
+    // для запроса к Андроид для номера
+    private static final int REQUEST_CONTACT_NUMBER = 99;
+
+    //  для звонка
+    private static final int REQUEST_CALL = 1;
+
     private Crime crime;
 
     private EditText titleField;
@@ -49,6 +57,9 @@ public class CrimeFragment extends Fragment {
     private Button deleteButton;
     private Button reportButton;
     private Button suspectButton;
+    private Button callToSuspectButton;
+
+    Uri numberUri;
 
     public static CrimeFragment newInstance(UUID crimeId) {
         Bundle args = new Bundle();
@@ -85,11 +96,11 @@ public class CrimeFragment extends Fragment {
             updateDate();
         }
         if (requestCode == REQUEST_CONTACT && intent != null) {
-            Uri contectUri = intent.getData();
+            Uri contactUri = intent.getData();
             // определения полей, значения которых должны быть возвращены запросом
             String[] queryFields = new String[]{ContactsContract.Contacts.DISPLAY_NAME};
             // выполнение запроса - contactUri здесь выполняет функции условия where
-            Cursor cursor = getActivity().getContentResolver().query(contectUri, queryFields,
+            Cursor cursor = getActivity().getContentResolver().query(contactUri, queryFields,
                     null, null, null);
             try {
                 //проверка получения результатов
@@ -145,7 +156,6 @@ public class CrimeFragment extends Fragment {
         });
 
         dateButton = view.findViewById(R.id.crime_date);
-        updateDate();
         dateButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -223,24 +233,41 @@ public class CrimeFragment extends Fragment {
                 Intent intent = new Intent(Intent.ACTION_SEND);
                 intent.setType("text/plain");
                 intent.putExtra(Intent.EXTRA_TEXT, getCrimeReport());
+                // тема для почты
                 intent.putExtra(Intent.EXTRA_SUBJECT, getString(R.string.crime_report_subject));
                 intent = Intent.createChooser(intent, getString(R.string.send_report));
                 startActivity(intent);
             }
         });
+
         suspectButton = view.findViewById(R.id.crime_suspect);
+        final Intent pickContactIntent = new Intent(Intent.ACTION_PICK,
+                ContactsContract.Contacts.CONTENT_URI);
+        // проверка наличия приложения с контактами
+        PackageManager packageManager = getActivity().getPackageManager();
+        if (packageManager.resolveActivity(pickContactIntent,
+                PackageManager.MATCH_DEFAULT_ONLY) == null) {
+            suspectButton.setEnabled(false);
+        }
         suspectButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent pickContactIntent = new Intent(Intent.ACTION_PICK,
-                        ContactsContract.Contacts.CONTENT_URI);
-                pickContactIntent = Intent.createChooser(pickContactIntent, "Выберете приложение:");
                 startActivityForResult(pickContactIntent, REQUEST_CONTACT);
             }
         });
         if (crime.getSuspect() != null) {
             suspectButton.setText(crime.getSuspect());
         }
+
+        callToSuspectButton = view.findViewById(R.id.call_to_suspect_button);
+        callToSuspectButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(Intent.ACTION_PICK,
+                        ContactsContract.Contacts.CONTENT_URI);
+                startActivityForResult(intent, REQUEST_CONTACT_NUMBER);
+            }
+        });
 
         return view;
     }
