@@ -10,6 +10,7 @@ public class Crime {
     private boolean solved;
     private boolean requiresPolice;
     private String suspect;
+    private String phoneNumberOfSuspect;
 
     public Crime(UUID id) {
         this.id = id;
@@ -62,5 +63,13 @@ public class Crime {
 
     public void setSuspect(String suspect) {
         this.suspect = suspect;
+    }
+
+    public String getPhoneNumberOfSuspect() {
+        return phoneNumberOfSuspect;
+    }
+
+    public void setPhoneNumberOfSuspect(String phoneNumberOfSuspect) {
+        this.phoneNumberOfSuspect = phoneNumberOfSuspect;
     }
 }

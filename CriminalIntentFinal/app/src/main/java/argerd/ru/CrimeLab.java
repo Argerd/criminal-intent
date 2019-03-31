@@ -71,6 +71,8 @@ public class CrimeLab {
         contentValues.put(CrimeTable.Columns.SOLVED, crime.isSolved() ? 1 : 0);
         contentValues.put(CrimeTable.Columns.POLICE, crime.isRequiresPolice() ? 1 : 0);
         contentValues.put(CrimeTable.Columns.SUSPECT, crime.getSuspect());
+        contentValues.put(CrimeTable.Columns.PHONE_NUMBER_OF_SUSPECT,
+                crime.getPhoneNumberOfSuspect());
         return contentValues;
     }
 
@@ -81,7 +83,7 @@ public class CrimeLab {
 
     public void deleteCrime(Crime crime) {
         database.delete(CrimeTable.NAME, CrimeTable.Columns.UUID + " = ?",
-                new String[] {crime.getId().toString()});
+                new String[]{crime.getId().toString()});
     }
 
     public void updateCrime(Crime crime) {

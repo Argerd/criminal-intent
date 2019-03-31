@@ -1,5 +1,6 @@
 package argerd.ru;
 
+import android.Manifest;
 import android.app.Activity;
 import android.content.Intent;
 import android.content.pm.PackageManager;
@@ -7,9 +8,11 @@ import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.ContactsContract;
+import android.support.annotation.NonNull;
+import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
-import android.support.v4.app.ShareCompat;
+import android.support.v4.content.ContextCompat;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.text.format.DateFormat;
@@ -41,11 +44,8 @@ public class CrimeFragment extends Fragment {
     // константа для запроса к Андроид для контакта
     private static final int REQUEST_CONTACT = 18;
 
-    // для запроса к Андроид для номера
-    private static final int REQUEST_CONTACT_NUMBER = 99;
-
-    //  для звонка
-    private static final int REQUEST_CALL = 1;
+    // для запроса разрешения для контактов
+    private static final int REQUEST_CODE_PERMISSION_READ_CONTACTS = 88;
 
     private Crime crime;
 
@@ -82,6 +82,25 @@ public class CrimeFragment extends Fragment {
         crime = CrimeLab.get(getActivity()).getCrime(crimeId);
     }
 
+    private String getPhoneNumber(String name) {
+        String number = null;
+        String selection = ContactsContract.CommonDataKinds.Phone.DISPLAY_NAME + " like'%"
+                + name + "%'";
+        String[] projection = new String[]{ContactsContract.CommonDataKinds.Phone.NUMBER};
+        Cursor cursor = getContext().getContentResolver().query(
+                ContactsContract.CommonDataKinds.Phone.CONTENT_URI, projection, selection,
+                null, null);
+        if (cursor.moveToFirst()) {
+            number = cursor.getString(0);
+        }
+        cursor.close();
+        if (number == null) {
+            number = "unsaved";
+        }
+
+        return number;
+    }
+
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent intent) {
         if (resultCode != Activity.RESULT_OK) {
@@ -110,8 +129,10 @@ public class CrimeFragment extends Fragment {
                 // извлечение первого столбца данных - имени подозреваемого.
                 cursor.moveToFirst();
                 String suspect = cursor.getString(0);
+                crime.setPhoneNumberOfSuspect(getPhoneNumber(suspect));
                 crime.setSuspect(suspect);
                 suspectButton.setText(suspect);
+                callToSuspectButton.setText(crime.getPhoneNumberOfSuspect());
             } finally {
                 cursor.close();
             }
@@ -120,6 +141,38 @@ public class CrimeFragment extends Fragment {
 
     private void updateDate() {
         dateButton.setText(crime.getDate().toString());
+    }
+
+    // метод, который делает кнопки, связанные с работой контактов, неактивными, если нет приложений
+    // для работы с контактами
+    private void setEnabledFalseButtonForContactsIfContactApplicationIsEmpty(Intent intent) {
+        // проверка наличия приложения с контактами
+        PackageManager packageManager = getActivity().getPackageManager();
+        if (packageManager.resolveActivity(intent, PackageManager.MATCH_DEFAULT_ONLY) == null) {
+            suspectButton.setEnabled(false);
+            callToSuspectButton.setEnabled(false);
+        } else {
+            suspectButton.setEnabled(true);
+            callToSuspectButton.setEnabled(true);
+        }
+    }
+
+    // метод, создающий неявный интент для вызова приложения для контактов
+    private void newIntentForContacts() {
+        Intent pickContactIntent = new Intent(Intent.ACTION_PICK,
+                ContactsContract.Contacts.CONTENT_URI);
+        setEnabledFalseButtonForContactsIfContactApplicationIsEmpty(pickContactIntent);
+        startActivityForResult(pickContactIntent, REQUEST_CONTACT);
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions,
+                                           @NonNull int[] grantResults) {
+        if (requestCode == REQUEST_CODE_PERMISSION_READ_CONTACTS) {
+            if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                newIntentForContacts();
+            }
+        }
     }
 
     /**
@@ -235,39 +288,42 @@ public class CrimeFragment extends Fragment {
                 intent.putExtra(Intent.EXTRA_TEXT, getCrimeReport());
                 // тема для почты
                 intent.putExtra(Intent.EXTRA_SUBJECT, getString(R.string.crime_report_subject));
+                // окно выбора приложения для отправки
                 intent = Intent.createChooser(intent, getString(R.string.send_report));
                 startActivity(intent);
             }
         });
 
         suspectButton = view.findViewById(R.id.crime_suspect);
-        final Intent pickContactIntent = new Intent(Intent.ACTION_PICK,
-                ContactsContract.Contacts.CONTENT_URI);
-        // проверка наличия приложения с контактами
-        PackageManager packageManager = getActivity().getPackageManager();
-        if (packageManager.resolveActivity(pickContactIntent,
-                PackageManager.MATCH_DEFAULT_ONLY) == null) {
-            suspectButton.setEnabled(false);
-        }
         suspectButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                startActivityForResult(pickContactIntent, REQUEST_CONTACT);
+                // узнаем разрешение на контакты
+                int permissionStatus = ContextCompat.checkSelfPermission(getContext(),
+                        Manifest.permission.READ_CONTACTS);
+                if (permissionStatus == PackageManager.PERMISSION_GRANTED) {
+                    newIntentForContacts();
+                } else {
+                    requestPermissions(new String[]{Manifest.permission.READ_CONTACTS},
+                            REQUEST_CODE_PERMISSION_READ_CONTACTS);
+                }
             }
         });
-        if (crime.getSuspect() != null) {
-            suspectButton.setText(crime.getSuspect());
-        }
 
         callToSuspectButton = view.findViewById(R.id.call_to_suspect_button);
         callToSuspectButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent(Intent.ACTION_PICK,
-                        ContactsContract.Contacts.CONTENT_URI);
-                startActivityForResult(intent, REQUEST_CONTACT_NUMBER);
+                Intent intent = new Intent(Intent.ACTION_DIAL, Uri.parse("tel:" +
+                        crime.getPhoneNumberOfSuspect()));
+                startActivity(intent);
             }
         });
+
+        if (crime.getSuspect() != null) {
+            suspectButton.setText(crime.getSuspect());
+            callToSuspectButton.setText(crime.getPhoneNumberOfSuspect());
+        }
 
         return view;
     }
