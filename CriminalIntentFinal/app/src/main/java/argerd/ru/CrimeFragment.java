@@ -4,14 +4,18 @@ import android.Manifest;
 import android.app.Activity;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.content.pm.ResolveInfo;
 import android.database.Cursor;
+import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.ContactsContract;
+import android.provider.MediaStore;
 import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.content.ContextCompat;
+import android.support.v4.content.FileProvider;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.text.format.DateFormat;
@@ -22,9 +26,13 @@ import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
 import android.widget.EditText;
+import android.widget.ImageButton;
+import android.widget.ImageView;
 import android.widget.Toast;
 
+import java.io.File;
 import java.util.Date;
+import java.util.List;
 import java.util.UUID;
 
 public class CrimeFragment extends Fragment {
@@ -46,6 +54,9 @@ public class CrimeFragment extends Fragment {
     // для запроса разрешения для контактов
     private static final int REQUEST_CODE_PERMISSION_READ_CONTACTS = 88;
 
+    // Для интента к приложению камеры
+    private static final int REQUEST_CODE_PHOTO = 99;
+
     private Crime crime;
 
     private EditText titleField;
@@ -57,6 +68,9 @@ public class CrimeFragment extends Fragment {
     private Button reportButton;
     private Button suspectButton;
     private Button callToSuspectButton;
+    private ImageView photoView;
+    private ImageButton photoButton;
+    private File photoFile;
 
     public static CrimeFragment newInstance(UUID crimeId) {
         Bundle args = new Bundle();
@@ -77,6 +91,7 @@ public class CrimeFragment extends Fragment {
         super.onCreate(savedInstanceState);
         UUID crimeId = (UUID) getArguments().getSerializable(ARG_CRIME_ID);
         crime = CrimeLab.get(getActivity()).getCrime(crimeId);
+        photoFile = CrimeLab.get(getActivity()).getPhotoFile(crime);
     }
 
     private String getPhoneNumber(String name) {
@@ -96,6 +111,16 @@ public class CrimeFragment extends Fragment {
         }
 
         return number;
+    }
+
+
+    private void updatePhotoView() {
+        if (photoFile == null || !photoFile.exists()) {
+            photoView.setImageDrawable(null);
+        } else {
+            photoView.setImageBitmap(PictureUtils.getScaledBitmap(photoFile.getPath(),
+                    getActivity()));
+        }
     }
 
     @Override
@@ -133,6 +158,11 @@ public class CrimeFragment extends Fragment {
             } finally {
                 cursor.close();
             }
+        } else if (requestCode == REQUEST_CODE_PHOTO) {
+            Uri uri = FileProvider.getUriForFile(getActivity(),
+                    "ru.argerd.android.criminalintentfinal.fileprovider", photoFile);
+            getActivity().revokeUriPermission(uri, Intent.FLAG_GRANT_WRITE_URI_PERMISSION);
+            updatePhotoView();
         }
     }
 
@@ -142,7 +172,7 @@ public class CrimeFragment extends Fragment {
 
     // метод, который делает кнопки, связанные с работой контактов, неактивными, если нет приложений
     // для работы с контактами
-    private void setEnabledFalseButtonForContactsIfContactApplicationIsEmpty(Intent intent) {
+    private void setEnabledButtonForContactsIfContactApplicationIsEmpty(Intent intent) {
         // проверка наличия приложения с контактами
         PackageManager packageManager = getActivity().getPackageManager();
         if (packageManager.resolveActivity(intent, PackageManager.MATCH_DEFAULT_ONLY) == null) {
@@ -158,7 +188,7 @@ public class CrimeFragment extends Fragment {
     private void newIntentForContacts() {
         Intent pickContactIntent = new Intent(Intent.ACTION_PICK,
                 ContactsContract.Contacts.CONTENT_URI);
-        setEnabledFalseButtonForContactsIfContactApplicationIsEmpty(pickContactIntent);
+        setEnabledButtonForContactsIfContactApplicationIsEmpty(pickContactIntent);
         startActivityForResult(pickContactIntent, REQUEST_CONTACT);
     }
 
@@ -321,6 +351,32 @@ public class CrimeFragment extends Fragment {
             suspectButton.setText(crime.getSuspect());
             callToSuspectButton.setText(crime.getPhoneNumberOfSuspect());
         }
+
+        photoButton = view.findViewById(R.id.crime_camera);
+        photoButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+                PackageManager packageManager = getActivity().getPackageManager();
+
+                if (photoFile != null && intent.resolveActivity(packageManager) != null) {
+                    photoButton.setEnabled(true);
+                } else {
+                    photoButton.setEnabled(false);
+                    Toast.makeText(getContext(), "Приложение камеры не найдено!" +
+                            " Фото сделать невозможно.", Toast.LENGTH_LONG).show();
+                }
+
+                Uri uri = FileProvider.getUriForFile(getActivity(),
+                        "ru.argerd.android.criminalintentfinal.fileprovider", photoFile);
+                intent.putExtra(MediaStore.EXTRA_OUTPUT, uri);
+
+                startActivityForResult(intent, REQUEST_CODE_PHOTO);
+            }
+        });
+
+        photoView = view.findViewById(R.id.crime_photo);
+        updatePhotoView();
 
         return view;
     }

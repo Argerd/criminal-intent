@@ -1,6 +1,7 @@
 package argerd.ru;
 
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
@@ -190,8 +191,8 @@ public class CrimeListFragment extends Fragment {
             policeButton.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    Toast.makeText(getActivity(), "Message send to police!",
-                            Toast.LENGTH_SHORT).show();
+                    Intent intentCall = new Intent(Intent.ACTION_DIAL, Uri.parse("tel:02"));
+                    startActivity(intentCall);
                 }
             });
             solvedImageView = itemView.findViewById(R.id.crime_solved);
