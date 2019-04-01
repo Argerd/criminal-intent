@@ -35,6 +35,8 @@ import java.util.Date;
 import java.util.List;
 import java.util.UUID;
 
+import argerd.ru.database.DialogFragmentPhoto;
+
 public class CrimeFragment extends Fragment {
     // константа для получения из аргумента фрагмента crimeId
     private static final String ARG_CRIME_ID = "crime_id";
@@ -377,6 +379,16 @@ public class CrimeFragment extends Fragment {
 
         photoView = view.findViewById(R.id.crime_photo);
         updatePhotoView();
+        photoView.setClickable(true);
+        photoView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                System.out.println(photoFile.getPath());
+                DialogFragmentPhoto dialogFragmentPhoto =
+                        DialogFragmentPhoto.newInstance(photoFile.getPath());
+                dialogFragmentPhoto.show(getFragmentManager(), DIALOG);
+            }
+        });
 
         return view;
     }
