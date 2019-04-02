@@ -17,7 +17,6 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import java.text.DateFormat;
 import java.util.List;
@@ -137,7 +136,7 @@ public class CrimeListFragment extends Fragment {
     }
 
     /**
-     * здесь распологается весь код, выполняющий работу по связыванию и обработки нажатий
+     * здесь распологается весь код, выполняющий работу по связыванию и обработке нажатий
      */
     private class CrimeHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
         private TextView titleTextView;

@@ -4,9 +4,7 @@ import android.Manifest;
 import android.app.Activity;
 import android.content.Intent;
 import android.content.pm.PackageManager;
-import android.content.pm.ResolveInfo;
 import android.database.Cursor;
-import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.ContactsContract;
@@ -22,6 +20,7 @@ import android.text.format.DateFormat;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.ViewTreeObserver;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
@@ -32,7 +31,6 @@ import android.widget.Toast;
 
 import java.io.File;
 import java.util.Date;
-import java.util.List;
 import java.util.UUID;
 
 import argerd.ru.database.DialogFragmentPhoto;
@@ -117,12 +115,18 @@ public class CrimeFragment extends Fragment {
 
 
     private void updatePhotoView() {
-        if (photoFile == null || !photoFile.exists()) {
-            photoView.setImageDrawable(null);
-        } else {
-            photoView.setImageBitmap(PictureUtils.getScaledBitmap(photoFile.getPath(),
-                    getActivity()));
-        }
+        ViewTreeObserver viewTreeObserver = photoView.getViewTreeObserver();
+        viewTreeObserver.addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
+            @Override
+            public void onGlobalLayout() {
+                if (photoFile == null || !photoFile.exists()) {
+                    photoView.setImageDrawable(null);
+                } else {
+                    photoView.setImageBitmap(PictureUtils.getScaledBitmap(photoFile.getPath(),
+                            photoView.getMaxWidth(), photoView.getMaxHeight()));
+                }
+            }
+        });
     }
 
     @Override
