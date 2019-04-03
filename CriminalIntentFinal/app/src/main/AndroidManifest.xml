@@ -26,7 +26,8 @@
         </activity>
         <activity
             android:name=".CrimePagerActivity"
-            android:parentActivityName=".CrimeListActivity" />
+            android:parentActivityName=".CrimeListActivity"
+            android:windowSoftInputMode="stateHidden" />
 
         <provider
             android:name="android.support.v4.content.FileProvider"
