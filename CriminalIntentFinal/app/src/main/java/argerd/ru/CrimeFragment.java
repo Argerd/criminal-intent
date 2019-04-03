@@ -35,6 +35,8 @@ import java.util.UUID;
 
 import argerd.ru.database.DialogFragmentPhoto;
 
+import static argerd.ru.R.string.crime_photo_no_image_description;
+
 public class CrimeFragment extends Fragment {
     // константа для получения из аргумента фрагмента crimeId
     private static final String ARG_CRIME_ID = "crime_id";
@@ -121,9 +123,13 @@ public class CrimeFragment extends Fragment {
             public void onGlobalLayout() {
                 if (photoFile == null || !photoFile.exists()) {
                     photoView.setImageDrawable(null);
+                    photoView.setContentDescription(
+                            getString(R.string.crime_photo_no_image_description));
                 } else {
                     photoView.setImageBitmap(PictureUtils.getScaledBitmap(photoFile.getPath(),
                             photoView.getMaxWidth(), photoView.getMaxHeight()));
+                    photoView.setContentDescription(
+                            getString(R.string.crime_photo_image_description));
                 }
             }
         });

@@ -34,4 +34,7 @@
     <string name="hide_subtittle">Скрыть подзаголовок</string>
 
     <string name="dialog_fragment_photo">Фото</string>
+    <string name="crime_photo_button_description">Сделать фото преступления</string>
+    <string name="crime_photo_no_image_description">Фото преступления (не задано)</string>
+    <string name="crime_photo_image_description">Фото преступления (задано)</string>
 </resources>
