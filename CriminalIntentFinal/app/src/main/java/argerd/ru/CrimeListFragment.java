@@ -20,9 +20,11 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import java.text.DateFormat;
-import java.util.Collections;
 import java.util.List;
 import java.util.Locale;
+
+import argerd.ru.touch_helper.ItemTouchHelperAdapter;
+import argerd.ru.touch_helper.SimpleItemTouchHelperCallback;
 
 public class CrimeListFragment extends Fragment {
     private static final String SAVED_SUBTITLE_VISIBLE = "subtitle";

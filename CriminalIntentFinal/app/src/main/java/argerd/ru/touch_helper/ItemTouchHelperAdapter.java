@@ -1,4 +1,4 @@
-package argerd.ru;
+package argerd.ru.touch_helper;
 
 public interface ItemTouchHelperAdapter {
 
