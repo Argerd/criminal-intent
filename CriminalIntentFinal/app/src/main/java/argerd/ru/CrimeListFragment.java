@@ -8,6 +8,7 @@ import android.support.v4.app.Fragment;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.helper.ItemTouchHelper;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -19,6 +20,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import java.text.DateFormat;
+import java.util.Collections;
 import java.util.List;
 import java.util.Locale;
 
@@ -67,6 +69,10 @@ public class CrimeListFragment extends Fragment {
         recyclerView.setLayoutManager((new LinearLayoutManager(getActivity())));
 
         updateUI();
+
+        ItemTouchHelper.Callback callback = new SimpleItemTouchHelperCallback(adapter);
+        ItemTouchHelper touchHelper = new ItemTouchHelper(callback);
+        touchHelper.attachToRecyclerView(recyclerView);
 
         return view;
     }
@@ -203,7 +209,8 @@ public class CrimeListFragment extends Fragment {
         }
     }
 
-    private class CrimeAdapter extends RecyclerView.Adapter<CrimeHolder> {
+    private class CrimeAdapter extends RecyclerView.Adapter<CrimeHolder>
+            implements ItemTouchHelperAdapter {
         public static final int POLICE_FREE = 0;
         public static final int FOR_POLICE = 1;
 
@@ -248,6 +255,29 @@ public class CrimeListFragment extends Fragment {
 
         public void setCrimes(List<Crime> crimes) {
             this.crimes = crimes;
+        }
+
+        @Override
+        public boolean onItemMove(int fromPosition, int toPosition) {
+            /*if (fromPosition < toPosition) {
+                for (int i = fromPosition; i < toPosition; i++) {
+                    Collections.swap(crimes, i, i + 1);
+                }
+            } else {
+                for (int i = fromPosition; i > toPosition; i--) {
+                    Collections.swap(crimes, i, i - 1);
+                }
+            }
+            notifyItemMoved(fromPosition, toPosition);
+            return true;*/
+            return false;
+        }
+
+        @Override
+        public void onItemDismiss(int position) {
+            CrimeLab.get(getContext()).deleteCrime(crimes.get(position));
+            crimes.remove(position);
+            notifyItemRemoved(position);
         }
     }
 }

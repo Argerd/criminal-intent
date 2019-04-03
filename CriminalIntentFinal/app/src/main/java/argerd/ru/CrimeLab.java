@@ -100,7 +100,7 @@ public class CrimeLab {
      *
      * @param whereClause - где ищем
      * @param whereArgs - что ищем
-     * @return курсор
+     * @retur курсор
      */
     private CrimeCursorWrapper queryCrimes(String whereClause, String[] whereArgs) {
         Cursor cursor = database.query(
