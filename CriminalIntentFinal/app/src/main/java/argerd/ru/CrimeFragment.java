@@ -86,7 +86,6 @@ public class CrimeFragment extends Fragment {
     /**
      * Тут настраивается фрагмент
      *
-     * @param savedInstanceState
      */
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -121,6 +120,7 @@ public class CrimeFragment extends Fragment {
         viewTreeObserver.addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
             @Override
             public void onGlobalLayout() {
+                photoView.getViewTreeObserver().removeOnGlobalLayoutListener(this);
                 if (photoFile == null || !photoFile.exists()) {
                     photoView.setImageDrawable(null);
                     photoView.setContentDescription(
