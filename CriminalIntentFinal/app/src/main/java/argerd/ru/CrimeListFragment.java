@@ -33,12 +33,12 @@ public class CrimeListFragment extends Fragment {
     private CrimeAdapter adapter;
 
     private Button createFirstCrimeButton;
-    private boolean isSubtittleVisible;
+    private boolean isSubtitleVisible;
 
     @Override
     public void onSaveInstanceState(@NonNull Bundle outState) {
         super.onSaveInstanceState(outState);
-        outState.putBoolean(SAVED_SUBTITLE_VISIBLE, isSubtittleVisible);
+        outState.putBoolean(SAVED_SUBTITLE_VISIBLE, isSubtitleVisible);
     }
 
     private void createNewCrime() {
@@ -54,7 +54,7 @@ public class CrimeListFragment extends Fragment {
         setHasOptionsMenu(true);
 
         if (savedInstanceState != null) {
-            isSubtittleVisible = savedInstanceState.getBoolean(SAVED_SUBTITLE_VISIBLE);
+            isSubtitleVisible = savedInstanceState.getBoolean(SAVED_SUBTITLE_VISIBLE);
         }
 
         View view = inflater.inflate(R.layout.fragment_crime_list, container, false);
@@ -91,7 +91,7 @@ public class CrimeListFragment extends Fragment {
         menuInflater.inflate(R.menu.fragment_crime_list, menu);
 
         MenuItem subtitleItem = menu.findItem(R.id.show_subtittle);
-        if (isSubtittleVisible) {
+        if (isSubtitleVisible) {
             subtitleItem.setTitle(R.string.hide_subtittle);
         } else {
             subtitleItem.setTitle(R.string.show_subtittle);
@@ -105,7 +105,7 @@ public class CrimeListFragment extends Fragment {
                 createNewCrime();
                 return true;
             case R.id.show_subtittle:
-                isSubtittleVisible = !isSubtittleVisible;
+                isSubtitleVisible = !isSubtitleVisible;
                 getActivity().invalidateOptionsMenu();
                 updateSubtittle();
                 return true;
@@ -120,7 +120,7 @@ public class CrimeListFragment extends Fragment {
         String subtittle = getResources().getQuantityString(R.plurals.subtitle_plural,
                 countOfCrimes, countOfCrimes);
 
-        if (!isSubtittleVisible) {
+        if (!isSubtitleVisible) {
             subtittle = null;
         }
 
