@@ -114,7 +114,6 @@ public class CrimeFragment extends Fragment {
         return number;
     }
 
-
     private void updatePhotoView() {
         ViewTreeObserver viewTreeObserver = photoView.getViewTreeObserver();
         viewTreeObserver.addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
@@ -202,16 +201,6 @@ public class CrimeFragment extends Fragment {
                 ContactsContract.Contacts.CONTENT_URI);
         setEnabledButtonForContactsIfContactApplicationIsEmpty(pickContactIntent);
         startActivityForResult(pickContactIntent, REQUEST_CONTACT);
-    }
-
-    @Override
-    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions,
-                                           @NonNull int[] grantResults) {
-        if (requestCode == REQUEST_CODE_PERMISSION_READ_CONTACTS) {
-            if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                newIntentForContacts();
-            }
-        }
     }
 
     /**
